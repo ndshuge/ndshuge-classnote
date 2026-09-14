@@ -32,7 +32,7 @@ goto AFTERINIT
 echo .git already exists, skipping
 
 :AFTERINIT
-git branch -M main
+echo (default branch will be set to main after the first commit)
 
 echo.
 echo === [3/6] Commit identity ===
@@ -41,19 +41,19 @@ if not "%GIT_NAME%"=="" goto HAVEID
 echo.
 set /p GIT_NAME=Enter your name (any name, only for commit log): 
 if "%GIT_NAME%"=="" set "GIT_NAME=%GH_USER%"
-git config --global user.name "%GIT_NAME%"
 
 :HAVEID
 for /f "delims=" %%i in ('git config --global user.email') do set "GIT_MAIL=%%i"
 if not "%GIT_MAIL%"=="" goto HAVEID2
-git config --global user.email "%GH_USER%@users.noreply.github.com"
+set "GIT_MAIL=%GH_USER%@users.noreply.github.com"
 
 :HAVEID2
 echo.
 echo === [4/6] Commit files ===
 git add -A
-git commit -m "lecture notes tool" 2>nul
+git -c user.name="%GIT_NAME%" -c user.email="%GIT_MAIL%" commit -m "lecture notes tool" 2>nul
 echo (if it says "nothing to commit", that is fine)
+git branch -M main
 
 echo.
 echo === [5/6] Set remote ===
