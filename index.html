@@ -61,7 +61,8 @@ body::before{
   content:"";position:fixed;inset:0 0 auto;height:340px;pointer-events:none;
   background:radial-gradient(120% 100% at 50% 0,var(--bg-glow) 0%,transparent 70%);opacity:.7;
 }
-.wrap{max-width:720px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 96px);position:relative}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 96px);position:relative;overflow:hidden;
+  transform-origin:center top;background:var(--bg)}
 h1{font-size:34px;font-weight:700;letter-spacing:-.5px;margin:14px 0 2px;line-height:1.15}
 .page-sub{font-size:15px;color:var(--muted);margin:0 0 18px}
 .ic{width:1em;height:1em;display:inline-flex;flex:0 0 auto}
@@ -128,13 +129,19 @@ button.plain{background:transparent;color:var(--accent);padding:8px 4px;font-wei
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .fade-in{animation:fadeUp .3s var(--ease) both}
 
-/* 视图转场：横向 push（学院同款） */
-.view{display:none}
+/* ===== 双舞台（学院框架 v2 同构）：viewBack 背景层 + scroller 前景层 ===== */
+#stage{position:relative;overflow:hidden}
+#viewBack{position:absolute;inset:0;z-index:1;opacity:0;transform:scale(.95);
+  pointer-events:none;overflow:hidden;will-change:transform,opacity}
+#viewBack.show{opacity:1}
+#scroller{position:relative;z-index:2;will-change:transform,opacity}
+#scroller.pop-shadow{box-shadow:-10px 0 30px rgba(0,0,0,.16)}
+body.pop-active{overflow:hidden;-webkit-user-select:none;user-select:none}
+
+/* 视图：整屏不透明上层覆盖（学院 §9.1） */
+.view{display:none;padding:0 16px}
 .view.on{display:block}
-.view.push{animation:pushIn .38s var(--ease) both}
-.view.pushBack{animation:pushBackIn .38s var(--ease) both}
-@keyframes pushIn{from{opacity:.3;transform:translateX(60px)}to{opacity:1;transform:none}}
-@keyframes pushBackIn{from{opacity:.3;transform:translateX(-52px)}to{opacity:1;transform:none}}
+
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .fade-in{animation:fadeUp .3s var(--ease) both}
 
@@ -200,44 +207,92 @@ button.plain{background:transparent;color:var(--accent);padding:8px 4px;font-wei
 .todo-item.done .todo-text{color:var(--muted);text-decoration:line-through}
 .todo-item.done .todo-box{color:var(--green);transform:scale(1.06)}
 
-/* Dock：悬浮玻璃胶囊（学院同款），滚动智能隐藏 */
+/* Dock：悬浮玻璃胶囊，滚动智能隐藏（spring 驱动） */
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:center;
   padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 12px);pointer-events:none;
-  transition:transform .44s var(--ease)}
-.dock.hidden{transform:translateY(140%)}
+  will-change:transform}
 .dockbar{
   pointer-events:auto;display:flex;align-items:center;justify-content:center;
   background:var(--glass);-webkit-backdrop-filter:blur(44px) saturate(1.8);backdrop-filter:blur(44px) saturate(1.8);
   border:1px solid var(--sep);box-shadow:inset 0 1px 0 var(--glass-edge),var(--sh-float);
-  border-radius:26px;padding:6px;gap:2px;
+  border-radius:26px;padding:6px;gap:2px;position:relative;
+}
+/* 跟随选中项的胶囊（spring 驱动） */
+.dock-pill{
+  position:absolute;top:6px;bottom:6px;border-radius:20px;background:var(--accent-soft);
+  pointer-events:none;will-change:transform,width;z-index:0;left:0;
 }
 .dock-btn{
-  width:74px;height:54px;border-radius:20px;display:flex;flex-direction:column;
+  width:74px;height:54px;border-radius:20px;display:flex;flex-direction:column;position:relative;z-index:1;
   align-items:center;justify-content:center;gap:4px;background:transparent;border:none;
   padding:0;color:var(--muted);font-weight:600;font-size:10.5px;letter-spacing:.2px;cursor:pointer;
-  transition:transform .24s var(--ease-spring),color .2s,background .2s;
 }
-.dock-btn .ic{width:24px;height:24px;transition:transform .24s var(--ease-spring)}
+.dock-btn .ic{width:24px;height:24px;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
 .dock-btn.on{color:var(--accent)}
-.dock-btn.on .ic{transform:translateY(-1px)}
-@media (hover:hover){
-  .dock-btn:hover{transform:translateY(-8px) scale(1.13);color:var(--accent);background:var(--fill-soft)}
-  .iconbtn:hover{transform:translateY(-6px) scale(1.09);background:var(--fill-soft);color:var(--accent)}
-  .cell:hover{background:var(--fill-soft)}
-  .rec-head:hover{background:var(--fill-soft)}
-  button:hover:not(:disabled){filter:brightness(.94)}
-  button.ghost:hover,button.plain:hover{filter:none;background:var(--accent-soft)}
-  .todo-item:hover{background:var(--fill-soft)}
-  .cal-nav button:hover{transform:translateY(-6px) scale(1.13)}
-  .cell[data-course]{transition:transform .22s var(--ease),box-shadow .22s}
+/* ===== 三段反馈：悬停（电脑） / 按下 / 按后（松手弹簧）===== */
+
+/* 通用可点元素：按下瞬时、松手弹簧过冲回位 */
+.iconbtn,.cal-nav button,button.ghost,button.mini,.sheet-btn,.back,.cell,.rec-head,.todo-item{
+  transition:transform .4s cubic-bezier(.34,1.42,.64,1),
+             filter .34s cubic-bezier(.32,.72,0,1),
+             background .26s cubic-bezier(.32,.72,0,1);
 }
+
+/* 分段控件/列表行：按后弹簧回位靠基础态 transition 接管 */
+
+/* 按下：快、无过冲 */
+.iconbtn:active,.cal-nav button:active,.back:active{
+  transition:transform .1s cubic-bezier(.32,.72,0,1),filter .1s;
+  transform:scale(.9);filter:brightness(.88);
+}
+button.ghost:active,button.mini:active,.sheet-btn:active{
+  transition:transform .1s cubic-bezier(.32,.72,0,1),filter .1s;
+  transform:scale(.96);filter:brightness(.9);
+}
+
+/* 触屏：按下 / 按后（松手）两段——.pressed 进去，吐出时基础态的 spring 接管 */
+.pressed{
+  transition:transform .1s cubic-bezier(.32,.72,0,1),filter .1s cubic-bezier(.32,.72,0,1) !important;
+  transform:scale(.965);
+  filter:brightness(.9);
+}
+.rec-head.pressed,.cell.pressed,.todo-item.pressed,.card.pressed{transform:scale(.99);filter:brightness(.96)}
+.dock-btn.pressed{transform:scale(.92)}
+/* 完成信号：勾选框跳动（JS 已在动作后补 WAAPI，这里给基础过渡） */
+.todo-box{transition:transform .3s cubic-bezier(.34,1.5,.64,1),color .24s}
+
+@media (hover:hover){
+  .dock-btn .ic{transition:transform .28s cubic-bezier(.34,1.56,.64,1)}
+  .dock-btn:hover{color:var(--accent)}
+  .dock-btn:hover .ic{transform:translateY(-4px) scale(1.14)}
+  .iconbtn:hover{transform:translateY(-6px) scale(1.09);background:var(--fill-soft);color:var(--accent);filter:none}
+  .cal-nav button:hover{transform:translateY(-6px) scale(1.13)}
+  .cell:hover,.rec-head:hover,.todo-item:hover{background:var(--fill-soft);transform:translateY(-1px)}
+  button:hover:not(:disabled){filter:brightness(.94)}
+  button.ghost:hover,button.plain:hover,.sheet-btn:hover{filter:none;background:var(--accent-soft);color:var(--accent)}
+  .sheet-btn.danger:hover{color:var(--red);background:var(--red-soft)}
+  /* —— 电脑：按后（松手位移回位）—— */
+  .cell:active,.rec-head:active,.todo-item:active{
+    transition:transform .1s cubic-bezier(.32,.72,0,1),background .1s;
+    transform:scale(.985);background:var(--fill);
+  }
+  button:active:not(:disabled){transition:transform .1s,filter .1s;transform:scale(.965);filter:brightness(.9)}
+  .sheet-btn:active{transform:scale(.97)}
+  .cal-day.has:active{transform:scale(.94)}
+}
+
 @media (hover:none){
+  /* —— 手机：按下高亮（大面元素）+ 小控件缩放 —— */
   .cell:active,.rec-head:active,.todo-item:active{background:var(--fill)}
   button:active:not(:disabled){filter:brightness(.9)}
-  .dock-btn:active{filter:brightness(.75)}
-  .cal-day.has:active{filter:brightness(.92)}
-  .card:active{filter:brightness(.97)}
+  .cal-day.has:active{filter:brightness(.92);transform:scale(.94);transition:transform .1s}
+  .cal-day.has{transition:transform .4s cubic-bezier(.34,1.42,.64,1)}
+  .dock-btn:active{filter:brightness(.8)}
+  .dock-btn:active .ic{transform:scale(.9)}
+  .dock-btn .ic{transition:transform .38s cubic-bezier(.34,1.5,.64,1)}
 }
+
+/* 免动效 */
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 /* toast（学院同款：ink 底、spring 滑入） */
@@ -288,12 +343,16 @@ button.plain{background:transparent;color:var(--accent);padding:8px 4px;font-wei
   </div>
 
   <div class="hd" id="hd">
-    <h1 class="h1">课堂总结</h1>
+    <h1 class="h1" id="hdTitle">课堂总结</h1>
     <p class="page-sub" id="pageSub">粘贴逐字稿，自动提炼考点与作业</p>
   </div>
 
+  <div id="stage">
+  <div id="viewBack"><div class="view" id="vbView"></div></div>
+  <div id="scroller">
+
   <!-- 录入 -->
-  <div class="view" id="view-new">
+  <div class="view on" id="view-new">
     <div class="card">
       <div class="field">
         <label for="courseSel">课程</label>
@@ -383,11 +442,15 @@ button.plain{background:transparent;color:var(--accent);padding:8px 4px;font-wei
       <div class="empty-tip" id="deadlineEmpty" style="display:none">还没有时间节点</div>
     </div>
   </div>
+
+  </div><!-- /scroller -->
+  </div><!-- /stage -->
 </div>
 
 <!-- Dock -->
 <nav class="dock" id="dock">
   <div class="dockbar">
+    <div class="dock-pill" id="dockPill"></div>
     <button class="dock-btn on" data-view="new"><span class="ic" data-icon="pencil"></span>录入</button>
     <button class="dock-btn" data-view="cal"><span class="ic" data-icon="calendar"></span>日历</button>
     <button class="dock-btn" data-view="courses"><span class="ic" data-icon="book"></span>课程</button>
@@ -537,6 +600,25 @@ function mdToHtml(md){
   return html;
 }
 
+/* ===== 弹簧引擎（学院框架同款：iOS UISpringTimingParameters 数值积分）=====
+   dampingRatio 0.8 / response 0.3s→ 带真实速度继承与过冲，不是死曲线 */
+function springTo(x0,target,fn,onDone,opts){
+  opts=opts||{};
+  var z=opts.z!==undefined?opts.z:.8, r=opts.r!==undefined?opts.r:.3;
+  var w=2*Math.PI/r, x=x0, v=opts.v||0, prev=performance.now(), running=true;
+  function step(now){
+    if(!running) return;
+    var dt=Math.min((now-prev)/1000,.033); prev=now;
+    var a=-2*z*w*v - w*w*(x-target);
+    v+=a*dt; x+=v*dt;
+    fn(x);
+    if(Math.abs(x-target)<.35 && Math.abs(v)<.35){ fn(target); running=false; if(onDone) onDone(); return; }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+  return function(){ running=false; };
+}
+
 /* ===== UI 基础 ===== */
 let toastTimer=null;
 function toast(msg){
@@ -554,64 +636,241 @@ function setStatus(msg,cls){const el=$('status');el.textContent=msg||'';el.class
 
 let currentView='new';
 const VIEW_ORDER={new:0,cal:1,courses:2,todo:3};
+/* 学院模型：Tab 平级（无历史栈），但共用双舞台 + 覆盖式转场＋跟手 pop */
+const TAB_HIST=[];   /* tab 浏览历史，给右滑返回用 */
+
 const PAGE_SUB = {
   new:'粘贴逐字稿，自动提炼考点与作业',
   cal:'按日期回看每天的课堂记录',
   courses:'每门课的全部总结归档',
   todo:'所有课的待办与时间节点汇总'
 };
-function switchView(v){
-  if(v===currentView) return;
-  const dir = VIEW_ORDER[v]>VIEW_ORDER[currentView] ? 'push' : 'pushBack';
+const PAGE_TITLE = {new:'录入',cal:'日历',courses:'课程',todo:'待办'};
+
+/* Dock 拖动胶囊：spring 跟随 */
+let pillX=0, pillW=0, pillCancels=[];
+function movePill(instant){
+  const on=document.querySelector('.dock-btn.on');
+  if(!on) return;
+  const bar=$('dock').querySelector('.dockbar');
+  const tx=on.offsetLeft, tw=on.offsetWidth;
+  const pill=bar.querySelector('.dock-pill');
+  if(!pill) return;
+  pillCancels.forEach(c=>c()); pillCancels=[];
+  if(instant){ pill.style.width=tw+'px'; pillX=tx; pillW=tw; pill.style.transform='translateX('+tx+'px)'; return; }
+  pill.style.width=tw+'px'; pillW=tw;
+  pillCancels.push(springTo(pillX,tx,function(x){ pillX=x; pill.style.transform='translateX('+x+'px)'; },null,{z:.72,r:.34}));
+}
+
+/* ===== 双舞台：前景 / 背景层 ===== */
+const scroller=$('scroller'), viewBack=$('viewBack'), vbView=$('vbView');
+function showViewBack(){ viewBack.classList.add('show'); }
+function hideViewBack(){ viewBack.classList.remove('show'); }
+function scrollerReset(){
+  scroller.style.transform='';
+  scroller.classList.remove('pop-shadow');
+  document.body.classList.remove('pop-active');
+  hideViewBack();
+}
+
+/* ===== 转场：整屏不透明上层滑入，下层微缩后退（学院 §9.1）===== */
+let busy=false;
+function switchView(v,back){
+  if(!back && v===currentView) return;
+  if(busy) return;
+  busy=true;
+  if(!back){ TAB_HIST.push(currentView); history.pushState({v:v},''); }
+  const dir = back ? -1 : (VIEW_ORDER[v]>VIEW_ORDER[currentView] ? 1 : -1);
+  const from = back ? (dir>0?60:-60) : (dir>0?window.innerWidth:0);
+  /* 先把旧页快照到底层？Tab 场景不需要——旧页 DOM 还在，直接把它当作底层露出来 */
+  const outEl=$('view-'+currentView);
   currentView=v;
-  ['new','cal','courses','todo'].forEach(k=>{
-    const el=$('view-'+k);
-    if(k===v){
-      el.style.display='block';
-      el.classList.remove('push','pushBack');
-      void el.offsetWidth;
-      el.classList.add(dir);
-    } else el.style.display='none';
-  });
+  const inEl=$('view-'+v);
+  if(back){
+    vbView.innerHTML='';
+  } else {
+    outEl.style.display='none';
+  }
+  inEl.style.display='block';
+  inEl.classList.add('on');
   document.querySelectorAll('.dock-btn').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  if(!back) movePill(false);
   $('pageSub').textContent = PAGE_SUB[v]||'';
   if(v==='cal') renderCalendar();
   if(v==='courses'){renderCourseList();$('courseDetail').style.display='none';$('courseListCard').style.display='block';}
   if(v==='todo') renderTodo();
   window.scrollTo({top:0,behavior:'auto'});
   $('hd').classList.remove('collapsed');
-  $('dock').classList.remove('hidden');
+  hdP=0;
+  dockShow();
+  /* 双舞台：前景铺开整屏不透明，从侧边滑入；完成后面归于常态 */
+  inEl.style.willChange='transform,opacity';
+  if(back){
+    /* 返回：前景从 -60px 回来，位移不大 */
+    inEl.animate(
+      [{transform:'translateX('+(dir>0?60:-60)+'px)',opacity:.4},
+       {transform:'translateX(0)',opacity:1}],
+      {duration:360,easing:'cubic-bezier(.32,.72,0,1)'}
+    ).onfinish=()=>{ inEl.style.willChange=''; busy=false; };
+  } else {
+    inEl.animate(
+      [{transform:'translateX('+from+'px) scale(.99)',opacity:.5},
+       {transform:'translateX(0) scale(1)',opacity:1}],
+      {duration:340,easing:'cubic-bezier(.32,.72,0,1)'}
+    ).onfinish=()=>{ inEl.style.willChange=''; outEl.style.display='none'; busy=false; };
+    /* 下层微缩后退（露出进深） */
+    outEl.style.display='block';
+    outEl.style.position='absolute';outEl.style.inset='0';outEl.style.zIndex='1';
+    outEl.animate(
+      [{transform:'translateX(0) scale(1)',opacity:1},
+       {transform:'translateX('+(-16*dir)+'px) scale(.97)',opacity:.6}],
+      {duration:340,easing:'cubic-bezier(.32,.72,0,1)',fill:'forwards'}
+    );
+  }
 }
+
 document.querySelectorAll('.dock-btn').forEach(b=>b.onclick=()=>switchView(b.dataset.view));
 
-/* 滚动 → 大标题塔缩 + Dock 智能隐藏 -->
-let lastY=0,ticking=false;
+/* ===== Interactive Pop：左缘跟手返回（学院任务 1 同构）=====
+   仅当当前 tab 有历史时可用；手指拖动 1:1 驱动，松手看位移+速度决定回退或弹回 */
+let pop={on:false,started:false,x0:0,y0:0,dx:0,live:false,cancel:null,samples:[]};
+let popGuardUntil=0;
+function popCan(){ return TAB_HIST.length>0 && !document.querySelector('.sheet.show'); }
+function popApply(x){
+  const W=pop.W||window.innerWidth;
+  const s=1-(x/W)*.06;
+  scroller.style.transform='translate3d('+x+'px,0,0) scale('+s+')';
+  scroller.classList.toggle('pop-shadow',x>2);
+}
+function popReset(){
+  pop.on=false;pop.started=false;pop.samples=[];
+  scrollerReset();
+}
+scroller.addEventListener('pointerdown',e=>{
+  if(!popCan()) return;
+  if(e.pointerType==='mouse'&&e.button!==0) return;
+  if(e.clientX>36) return;                     /* 仅屏左缘 36px（iOS 手势热区）*/
+  if(pop.cancel){ pop.cancel(); pop.cancel=null; }
+  pop.on=true;pop.started=false;
+  pop.x0=e.clientX;pop.y0=e.clientY;pop.dx=0;pop.samples=[];
+  pop.W=scroller.clientWidth;
+  pop.live=true;
+},true);
+scroller.addEventListener('pointermove',e=>{
+  if(!pop.on) return;
+  const dx=e.clientX-pop.x0;
+  if(!pop.started){
+    if(Math.abs(e.clientY-pop.y0)>14){ popReset(); return; }  /* 变竖滚，放弃 */
+    if(dx<6) return;
+  }
+  pop.started=true;
+  pop.dx=Math.max(0,dx);
+  showViewBack();
+  pop.samples.push({t:performance.now(),x:pop.dx});
+  if(pop.samples.length>4) pop.samples.shift();
+  popApply(pop.dx);
+});
+function popEnd(){
+  if(!pop.on) return;
+  pop.on=false;pop.live=false;
+  if(!pop.started){ popReset(); return; }
+  const W=pop.W||window.innerWidth;
+  let vel=0;
+  if(pop.samples.length>1){
+    const a=pop.samples[0],b=pop.samples[pop.samples.length-1];
+    if(b.t>a.t) vel=(b.x-a.x)/(b.t-a.t);      /* px/ms 松手速度 */
+  }
+  const goBack = pop.dx>W*.3 || vel>.5;       /* 位移>30%屏宽 或 速度>0.5px/ms → 返回 */
+  if(goBack){
+    popGuardUntil=performance.now()+450;
+    pop.cancel=springTo(pop.dx,W,popApply,()=>{
+      pop.cancel=null;
+      const prev=TAB_HIST.pop();
+      popReset();
+      if(prev) switchView(prev,true);
+    },{z:.86,r:.34});
+  }else{
+    pop.cancel=springTo(pop.dx,0,popApply,()=>{ pop.cancel=null; popReset(); },{z:.86,r:.34});
+  }
+}
+scroller.addEventListener('pointerup',popEnd);
+scroller.addEventListener('pointercancel',popEnd);
+/* 浏览器/页面回退键：与手势统一走同一套 */
+window.addEventListener('popstate',()=>{
+  if(TAB_HIST.length){
+    const prev=TAB_HIST.pop();
+    switchView(prev,true);
+  }else{
+    history.pushState({v:currentView},'');   /* 根页拦住，不退出 */
+  }
+});
+history.pushState({v:'new'},'');
+
+/* ===== Dock 显隐：spring 驱动 ===== */
+let dockY=0, dockCancel=null, dockHidden=false;
+function dockHide(){
+  if(dockHidden) return; dockHidden=true;
+  if(dockCancel) dockCancel();
+  const h=90;
+  dockCancel=springTo(dockY,h,function(y){ dockY=y; $('dock').style.transform='translateY('+y+'px)'; },null,{z:.9,r:.32});
+}
+function dockShow(){
+  if(!dockHidden) return; dockHidden=false;
+  if(dockCancel) dockCancel();
+  dockCancel=springTo(dockY,0,function(y){ dockY=y; $('dock').style.transform='translateY('+y+'px)'; $('dock').style.opacity=String(1); },null,{z:.8,r:.34});
+}
+
+/* ===== 大标题塔缩：spring 驱动比例 ===== */
+let hdP=0, hdCancel=null;
+function hdCollapse(to){
+  if(hdCancel) hdCancel();
+  hdCancel=springTo(hdP,to,function(p){
+    hdP=p;
+    $('hd').classList.toggle('collapsed',p>.5);
+  },null,{z:.9,r:.3});
+}
+
+/* 滚动：IntersectionObserver 风控（禁 scroll 监听抖动），改 rAF 阈值 + velocity */
+let lastY=0, ticking=false, vVel=0;
 window.addEventListener('scroll',()=>{
   if(ticking) return;
   ticking=true;
   requestAnimationFrame(()=>{
-    const y=window.scrollY;
-    $('hd').classList.toggle('collapsed',y>44);
-    document.body.classList.toggle('scrolled',y>50);
-    if(y>120 && y>lastY+6) $('dock').classList.add('hidden');
-    else if(y<lastY-6 || y<90) $('dock').classList.remove('hidden');
+    const y=window.scrollY, d=y-lastY;
+    vVel = vVel*.6 + d*.4;
+    if(y>52 && hdP<.5) hdCollapse(1);
+    else if(y<=38 && hdP>=.5) hdCollapse(0);
+    if(y>140 && vVel>2.2) dockHide();
+    else if(vVel<-1.4 || y<80) dockShow();
     lastY=y;
     ticking=false;
   });
 },{passive:true});
 
-/* ===== Sheet ===== */
+/* ===== Sheet：环境光 + 背景舞台弹簧后退（学院同款）===== */
+let stageScale=1, stageCancel=null;
+function stageBack(on){
+  if(stageCancel) stageCancel();
+  const target = on?.94:1;
+  stageCancel=springTo(stageScale,target,function(s){
+    stageScale=s;
+    document.querySelector('.wrap').style.transform='scale('+s+')';
+    document.querySelector('.wrap').style.borderRadius = s<.999?((1-s)*180)+'px':'0px';
+  },null,{z:1,r:.34});
+}
 function openSheet(){
   $('apiKey').value=getKey();
   $('sheet').classList.remove('out');
   $('sheet').classList.add('show');
   $('sheetMask').classList.add('show');
+  stageBack(true);
 }
 function closeSheet(){
   const s=$('sheet');
   s.classList.remove('show');
   s.classList.add('out');
   $('sheetMask').classList.remove('show');
+  stageBack(false);
   setTimeout(()=>s.classList.remove('out'),340);
 }
 $('settingsToggle').onclick=openSheet;
@@ -812,7 +1071,8 @@ function showDay(ds){
   $('dayTitle').textContent=ds.slice(5)+' 周'+dn[d.getDay()]+' · 第'+weekOf(ds)+'周';
   $('dayList').innerHTML=recs.length?recs.map(r=>recItemHtml(r,true)).join(''):'<div class="empty-tip">这天没有记录</div>';
   bindRec();
-  panel.style.animation='none';void panel.offsetWidth;panel.style.animation='';
+  panel.style.display='block';
+  panel.style.animation='none';void panel.offsetWidth;panel.style.animation='fadeUp .3s var(--ease) both';
 }
 function recItemHtml(r,hideDate){
   const meta=[r.slot?'第'+r.slot+'节':'',r.time||''].filter(Boolean).join(' · ');
@@ -872,7 +1132,7 @@ function renderCourseDetail(course){
     .sort((a,b)=>(b.date+(b.slot||'')).localeCompare(a.date+(a.slot||'')));
   $('detailList').innerHTML=recs.length?recs.map(r=>recItemHtml(r,false)).join(''):'<div class="empty-tip">这门课还没有记录</div>';
   bindRec();
-  $('courseDetail').style.animation='none';void $('courseDetail').offsetWidth;$('courseDetail').style.animation='';
+  $('courseDetail').style.animation='none';void $('courseDetail').offsetWidth;$('courseDetail').style.animation='fadeUp .34s var(--ease) both';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 $('backToCourses').onclick=()=>{
@@ -946,6 +1206,39 @@ function renderAll(){
 }
 
 initForm();
+requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  const on=document.querySelector('.dock-btn.on');
+  if(on){ const pill=$('dockPill'); pill.style.width=on.offsetWidth+'px'; pillX=on.offsetLeft; pill.style.transform='translateX('+pillX+'px)'; }
+}));
+window.addEventListener('resize',()=>movePill(true));
+/* ===== 三段反馈（触屏）：按下 → 按后弹簧回位 =====
+   CSS 的 :active 在 iOS 上松手瞬间归零，没余韵。
+   这里接管：按下加 .pressed（快、无过冲），松手加 .tapped（.tapped 负责
+   清状态，让基础态的 spring transition 把它弹回去，并触发完成信号）*/
+const TAP_SEL='.card,.cell,.rec-head,.todo-item,.dock-btn,.sheet-btn,.iconbtn,.ghost,.mini,.cal-day.has,.back,.cal-nav button';
+document.addEventListener('touchstart',e=>{
+  const el=e.target.closest(TAP_SEL);
+  if(!el||el._pressed) return;
+  el._pressed=true;
+  el.classList.add('pressed');
+},{passive:true});
+function releaseTap(e){
+  const el=e.target.closest(TAP_SEL);
+  if(!el||!el._pressed) return;
+  el._pressed=false;
+  el.classList.remove('pressed');
+  /* 完成信号：勾选框跳一下 */
+  const box=el.querySelector('.todo-box');
+  if(box){ box.animate([{transform:'scale(1)'},{transform:'scale(1.28)'},{transform:'scale(1.06)'}],{duration:330,easing:'cubic-bezier(.34,1.56,.64,1)'}); }
+  /* 完成信号：日历日期圈弹一下 */
+  if(el.classList.contains('cal-day')){ el.animate([{transform:'scale(1)'},{transform:'scale(1.18)'},{transform:'scale(1)'}],{duration:320,easing:'cubic-bezier(.34,1.56,.64,1)'}); }
+  /* 完成信号：切 tab 时图标弹一下 */
+  if(el.classList.contains('dock-btn')){
+    const ic=el.querySelector('.ic');
+    if(ic) ic.animate([{transform:'scale(1)'},{transform:'scale(1.3)'},{transform:'scale(1)'}],{duration:330,easing:'cubic-bezier(.34,1.56,.64,1)'});
+  }
+}
+['touchend','touchcancel'].forEach(ev=>document.addEventListener(ev,releaseTap,{passive:true}));
 if(!getKey()) setTimeout(openSheet,500);
 </script>
 </body>
