@@ -129,6 +129,118 @@ button.plain{background:transparent;color:var(--accent);padding:8px 4px;font-wei
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .fade-in{animation:fadeUp .3s var(--ease) both}
 
+/* ===== 首次使用引导 ===== */
+.onb{position:fixed;inset:0;z-index:80;display:none;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.onb.show{display:block;animation:onbIn .34s cubic-bezier(.32,.72,0,1)}
+@keyframes onbIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.onb-card{max-width:560px;margin:0 auto;min-height:100%;box-sizing:border-box;
+  padding:calc(env(safe-area-inset-top,0px) + 34px) 22px calc(env(safe-area-inset-bottom,0px) + 22px);
+  display:flex;flex-direction:column}
+.onb-dots{display:flex;gap:6px;justify-content:center;margin-bottom:28px}
+.onb-dots i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:all .3s cubic-bezier(.32,.72,0,1)}
+.onb-dots i.on{background:var(--accent);width:20px;border-radius:4px}
+.onb-pane{display:none;flex:1}
+.onb-pane.on{display:block;animation:onbPane .34s cubic-bezier(.32,.72,0,1)}
+@keyframes onbPane{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.onb-ic{width:60px;height:60px;border-radius:18px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--accent),#5E5CE6);color:#fff}
+.onb-ic.ok{background:linear-gradient(135deg,#34C759,#1FA84A)}
+.onb-ic .ic,.onb-ic svg{width:28px;height:28px}
+.onb h2{font-size:26px;font-weight:700;letter-spacing:-.4px;margin:0 0 12px;color:var(--ink)}
+.onb-lead{font-size:15.5px;line-height:1.75;color:var(--ink2);margin:0 0 22px}
+.onb-why{background:var(--fill-soft);border-radius:15px;padding:15px 17px;margin-bottom:20px}
+.onb-why-t{font-weight:650;font-size:14.5px;color:var(--ink);margin-bottom:8px}
+.onb-why p{font-size:14px;line-height:1.72;color:var(--ink2);margin:0 0 8px}
+.onb-why p:last-child{margin-bottom:0}
+.onb-why b{color:var(--ink);font-weight:600}
+.onb-steps-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.onb-steps-mini>div{background:var(--bg-card);border:1px solid var(--line);border-radius:13px;
+  padding:13px 10px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
+.onb-steps-mini b{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;
+  font-size:13px;display:flex;align-items:center;justify-content:center;font-weight:600}
+.onb-steps-mini span{font-size:12.5px;color:var(--ink2);line-height:1.4}
+.onb-prov{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.onb-prov-card{text-align:left;font-family:inherit;cursor:pointer;border-radius:16px;padding:15px 16px;
+  border:1.5px solid var(--line);background:var(--bg-card);transition:border-color .2s,background .2s}
+.onb-prov-card.on{border-color:var(--accent);background:var(--accent-soft)}
+.opc-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.opc-top b{font-size:16px;color:var(--ink);font-weight:650}
+.opc-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:#34C759;color:#fff;letter-spacing:.2px}
+.opc-badge.paid{background:var(--muted)}
+.onb-prov-card p{font-size:13.5px;line-height:1.65;color:var(--ink2);margin:0 0 8px}
+.opc-link{font-size:13px;color:var(--accent);font-weight:550}
+.onb-keyrow{display:flex;gap:9px;margin-bottom:10px}
+.onb-keyrow input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+  font-family:inherit;font-size:15px;background:var(--bg-card);color:var(--ink);outline:none}
+.onb-keyrow input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.btn-go{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px 20px;
+  font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;flex:0 0 auto;transition:opacity .2s}
+.btn-go:disabled{opacity:.45}
+.onb-note{font-size:12.5px;line-height:1.6;color:var(--muted);margin:0}
+.onb-flow{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.onb-f{position:relative;padding-left:18px;border-left:2px solid var(--line)}
+.onb-f b{display:block;font-size:15.5px;color:var(--ink);font-weight:650;margin-bottom:5px}
+.onb-f p{margin:0;font-size:14px;line-height:1.7;color:var(--ink2)}
+.onb-tips{display:flex;flex-direction:column;gap:10px}
+.onb-tip{display:flex;gap:10px;align-items:flex-start;background:var(--fill-soft);border-radius:13px;padding:12px 14px}
+.onb-tip .ic,.onb-tip svg{width:17px;height:17px;flex:0 0 auto;color:var(--accent);margin-top:2px}
+.onb-tip span:last-child{font-size:13.5px;line-height:1.65;color:var(--ink2)}
+.onb-actions{display:flex;gap:10px;align-items:center;margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
+.onb-skip{background:none;border:none;color:var(--muted);font-family:inherit;font-size:14.5px;cursor:pointer;padding:12px 8px}
+.onb-next{margin-left:auto;min-width:110px}
+
+/* ===== 服务商选择 ===== */
+.auto-tag{font-size:12.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);
+  padding:4px 10px;border-radius:8px;letter-spacing:.2px}
+.provider{margin-bottom:14px}
+.provider-label{font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:8px}
+.prov-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.prov-tab{
+  display:flex;flex-direction:column;gap:3px;align-items:flex-start;
+  padding:11px 13px;border-radius:13px;border:1.5px solid var(--line);
+  background:var(--bg-card);font-family:inherit;text-align:left;cursor:pointer;
+  transition:border-color .2s,background .2s;
+}
+.prov-tab b{font-size:14.5px;color:var(--ink);font-weight:600}
+.prov-tab span{font-size:11.5px;color:var(--muted);line-height:1.4}
+.prov-tab.on{border-color:var(--accent);background:var(--accent-soft)}
+.prov-tab.on b{color:var(--accent)}
+
+/* ===== 多段逐字稿 ===== */
+.seg-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.seg-head label{margin-bottom:0}
+.seg-item{margin-bottom:10px}
+.seg-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.seg-tag{font-size:12.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);
+  padding:2px 9px;border-radius:7px;letter-spacing:.3px}
+.seg-del{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;
+  padding:3px 8px;border-radius:7px;font-family:inherit}
+.seg-ta{
+  width:100%;min-height:120px;resize:vertical;box-sizing:border-box;
+  border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+  font-family:inherit;font-size:15px;line-height:1.6;color:var(--ink);
+  background:var(--bg-card);outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.seg-ta:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+/* markdown 渲染：勾选清单 / 表格 / 引用 / 代码 */
+.md-todo{display:flex;gap:8px;align-items:flex-start;margin:6px 0;line-height:1.6}
+.md-todo .md-box{flex:0 0 auto;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;margin-top:2px}
+.md-todo.done .md-box{background:var(--accent);border-color:var(--accent)}
+.md-todo.done span:last-child{opacity:.55;text-decoration:line-through}
+.out table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+.out th,.out td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+.out th{background:var(--fill-soft);font-weight:600}
+.out blockquote{margin:10px 0;padding:8px 14px;border-left:3px solid var(--accent);
+  background:var(--fill-soft);border-radius:0 8px 8px 0;color:var(--ink2)}
+.out pre{background:var(--fill-soft);border-radius:10px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+.out code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px;
+  background:var(--fill-soft);padding:2px 6px;border-radius:5px}
+.out pre code{background:none;padding:0}
+.out hr{border:none;border-top:1px solid var(--line);margin:14px 0}
+.out a{color:var(--accent);text-decoration:none}
+
 /* ===== 双舞台（学院框架 v2 同构）：viewBack 背景层 + scroller 前景层 ===== */
 #stage{position:relative;overflow:hidden}
 #viewBack{position:absolute;inset:0;z-index:1;opacity:0;transform:scale(.95);
@@ -372,8 +484,14 @@ button.ghost:active,button.mini:active,.sheet-btn:active{
     </div>
 
     <div class="card">
-      <label for="transcript">课堂逐字稿</label>
-      <textarea id="transcript" placeholder="把语音备忘录转出来的文字粘在这里&#10;&#10;（语音备忘录 → 长按录音 → 转文字 → 全选复制）"></textarea>
+      <div class="seg-head">
+        <label>课堂逐字稿</label>
+        <button class="ghost mini" id="addSeg">+ 添加一段</button>
+      </div>
+      <div class="hint" style="margin-bottom:10px">
+        语音备忘录 → 长按录音 → 转文字 → 全选复制。一节大课分两次录的，分别粘到两段里。
+      </div>
+      <div id="segList"></div>
       <div class="row" style="margin-top:12px">
         <button id="summarize">生成总结</button>
         <button class="ghost mini" id="pasteBtn">粘贴</button>
@@ -385,7 +503,8 @@ button.ghost:active,button.mini:active,.sheet-btn:active{
     <div class="card" id="resultCard" style="display:none">
       <div class="row" style="margin-bottom:12px">
         <button class="ghost mini" id="copyBtn">复制</button>
-        <button id="saveRec" style="padding:9px 16px;font-size:15px">保存到档案</button>
+        <span class="auto-tag">已自动归档</span>
+        <button class="ghost mini" id="saveRec" style="margin-left:auto">重新归档</button>
       </div>
       <div class="out" id="output"></div>
     </div>
@@ -460,14 +579,113 @@ button.ghost:active,button.mini:active,.sheet-btn:active{
 
 <div class="toast" id="toast"><div class="toast-inner" id="toastInner"></div></div>
 
+<!-- 首次使用引导（三步） -->
+<div class="onb" id="onb">
+  <div class="onb-card" id="onbCard">
+    <div class="onb-dots" id="onbDots"><i class="on"></i><i></i><i></i></div>
+
+    <!-- 第1步：这是什么 -->
+    <section class="onb-pane on" data-pane="0">
+      <div class="onb-ic"><span class="ic" data-icon="mic"></span></div>
+      <h2>课堂录音 → 结构化笔记</h2>
+      <p class="onb-lead">上课录个音，把转出来的文字粘进来，自动给你整理成十二个分区的课堂档案：知识点、考试范围、作业、时间节点，还有专门推给你的卡点和思考题。</p>
+
+      <div class="onb-why">
+        <div class="onb-why-t">为什么还要用语音备忘录？</div>
+        <p>网页在 iPhone 上做不到后台录音。你一切到别的 App，网页的麦克风就被系统停了。这是 iOS 的硬限制，绕不过去。</p>
+        <p>所以分工是：<b>录音交给系统语音备忘录</b>（能后台、能锁屏、省电），<b>汇总交给这个页面</b>。</p>
+      </div>
+
+      <div class="onb-steps-mini">
+        <div><b>1</b><span>语音备忘录录音</span></div>
+        <div><b>2</b><span>转文字后复制</span></div>
+        <div><b>3</b><span>粘进来生成</span></div>
+      </div>
+    </section>
+
+    <!-- 第2步：选服务商 + 填 key -->
+    <section class="onb-pane" data-pane="1">
+      <div class="onb-ic"><span class="ic" data-icon="key"></span></div>
+      <h2>接一个 AI 服务</h2>
+      <p class="onb-lead">需要你自己填一个 API Key。两个都行，推荐先试免费的。</p>
+
+      <div class="onb-prov" id="onbProv">
+        <button class="onb-prov-card on" data-prov="zhipu">
+          <div class="opc-top"><b>智谱 GLM</b><span class="opc-badge">免费</span></div>
+          <p>GLM-4-Flash 完全免费、不限量，国内直连不用梯子。注册就送 2000 万 token。</p>
+          <span class="opc-link" data-url="https://bigmodel.cn/usercenter/apikeys">去拿免费 Key →</span>
+        </button>
+        <button class="onb-prov-card" data-prov="deepseek">
+          <div class="opc-top"><b>DeepSeek</b><span class="opc-badge paid">付费</span></div>
+          <p>质量更好，一节课大约 1.5 分钱。充 5 块钱够用一个学期。</p>
+          <span class="opc-link" data-url="https://platform.deepseek.com/api_keys">去拿 DeepSeek Key →</span>
+        </button>
+      </div>
+
+      <div class="onb-keyrow">
+        <input type="password" id="onbKey" placeholder="把 API Key 粘在这里" autocomplete="off">
+        <button class="btn-go" id="onbSave">保存</button>
+      </div>
+      <p class="onb-note">Key 只存在你这台设备的浏览器里，不会上传到任何地方。代码是开源的，仓库里没有 Key。</p>
+    </section>
+
+    <!-- 第3步：怎么用 -->
+    <section class="onb-pane" data-pane="2">
+      <div class="onb-ic ok"><span class="ic" data-icon="check"></span></div>
+      <h2>可以开始用了</h2>
+      <p class="onb-lead">每次上完课，重复这三步就行。</p>
+
+      <div class="onb-flow">
+        <div class="onb-f">
+          <b>录音</b>
+          <p>上课前开语音备忘录。一节大课中间有课间休息、分开录了两段也没关系，页面支持分段粘。</p>
+        </div>
+        <div class="onb-f">
+          <b>转文字</b>
+          <p>下课后长按录音 → 「显示转写文本」→ 全选复制。iOS 18 以上自带这功能。</p>
+        </div>
+        <div class="onb-f">
+          <b>粘贴生成</b>
+          <p>开到「录入」页，选好课程和日期，粘进去点生成。生成完自动归档，不用再点保存。</p>
+        </div>
+      </div>
+
+      <div class="onb-tips">
+        <div class="onb-tip"><span class="ic" data-icon="calendar"></span><span>「日历」按天回看，「课程」按科目看全部，「待办」汇总所有作业和 deadline。</span></div>
+        <div class="onb-tip"><span class="ic" data-icon="download"></span><span>记录存在浏览器里。换了设备，用设置里的「导出 / 导入备份」搬过去。</span></div>
+      </div>
+    </section>
+
+    <div class="onb-actions">
+      <button class="onb-skip" id="onbSkip">跳过</button>
+      <button class="btn-go onb-next" id="onbNext">下一步</button>
+    </div>
+  </div>
+</div>
+
 <div class="sheet-mask" id="sheetMask"></div>
 <div class="sheet" id="sheet">
   <p class="sheet-title">设置</p>
-  <input type="password" id="apiKey" placeholder="DeepSeek API Key（sk-...）" autocomplete="off">
-  <div class="hint" style="margin:-2px 4px 12px">
-    只存在这台设备，不会上传。<a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener">获取 key</a>
+
+  <div class="provider">
+    <div class="provider-label">选择服务商</div>
+    <div class="prov-tabs" id="provTabs">
+      <button class="prov-tab on" data-prov="deepseek">
+        <b>DeepSeek</b><span>质量好 · 付费 · 1.5分/节课</span>
+      </button>
+      <button class="prov-tab" data-prov="zhipu">
+        <b>智谱 GLM</b><span>完全免费 · 国内直连</span>
+      </button>
+    </div>
   </div>
+
+  <input type="password" id="apiKey" placeholder="DeepSeek API Key（sk-...）" autocomplete="off">
+  <div class="hint" style="margin:-2px 4px 12px" id="keyHint">
+    只存在这台设备，不会上传。<a id="keyLink" href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener">获取 key</a>
+  </div>
+
   <button class="sheet-btn" id="saveKey">保存 Key</button>
+  <button class="sheet-btn" id="guideBtn">使用说明</button>
   <button class="sheet-btn" id="exportBtn">导出备份</button>
   <button class="sheet-btn" id="importBtn">导入备份</button>
   <button class="sheet-btn cancel" id="sheetClose">取消</button>
@@ -481,6 +699,11 @@ const ICONS = {
   calendar:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
   book:'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/>',
   'check-circle':'<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>',
+  mic:'<path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/>',
+  key:'<path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>',
+  info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
   'chevron-left':'<path d="m15 18-6-6 6-6"/>',
   'chevron-right':'<path d="m9 18 6-6-6-6"/>',
   settings:'<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>'
@@ -498,6 +721,28 @@ paintIcons();
 
 const $ = id => document.getElementById(id);
 const KEY_STORE = 'lecture_ds_key';
+const PROV_STORE = 'lecture_provider';
+/* 双通道：DeepSeek（付费·质量好）/ 智谱 GLM-4-Flash（完全免费·国内直连） */
+const PROVIDERS = {
+  deepseek:{
+    name:'DeepSeek',
+    endpoint:'https://api.deepseek.com/chat/completions',
+    model:'deepseek-flash',
+    placeholder:'DeepSeek API Key（sk-...）',
+    keyUrl:'https://platform.deepseek.com/api_keys',
+    note:'只存在这台设备，不会上传。'
+  },
+  zhipu:{
+    name:'智谱 GLM',
+    endpoint:'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+    model:'glm-4-flash',
+    placeholder:'智谱 API Key',
+    keyUrl:'https://bigmodel.cn/usercenter/apikeys',
+    note:'完全免费、无需充值。'
+  }
+};
+function getProv(){ const p=localStorage.getItem(PROV_STORE); return PROVIDERS[p]?p:'deepseek'; }
+function setProv(p){ localStorage.setItem(PROV_STORE,PROVIDERS[p]?p:'deepseek'); }
 const REC_STORE = 'lecture_records_v2';
 const DONE_STORE = 'lecture_done_v1';
 
@@ -556,47 +801,130 @@ function getRecords(){try{return JSON.parse(localStorage.getItem(REC_STORE)||'[]
 function setRecords(r){localStorage.setItem(REC_STORE,JSON.stringify(r))}
 function getDone(){try{return JSON.parse(localStorage.getItem(DONE_STORE)||'[]')}catch(e){return[]}}
 function setDone(d){localStorage.setItem(DONE_STORE,JSON.stringify(d))}
-function getKey(){return localStorage.getItem(KEY_STORE)||''}
+function getKey(){ return localStorage.getItem(KEY_STORE)||'' }
+function setKey(k){ localStorage.setItem(KEY_STORE,k||''); }
 
-/* ===== 提示词 ===== */
-const SYSTEM_PROMPT = `你是一个帮大学生整理课堂内容的助手。用户会给你一段课堂录音的逐字稿（可能有语音识别错误、口头语、重复），你要从中提取真正有用的信息。
+/* ===== 提示词 =====
+   设计原则：
+   1) 分区要穷尽——任何内容都有归属，不属于任何一类的进「其他」，不允许因为不在预设分类里就丢掉
+   2) 分层要清晰——「老师说的」和「AI 推断的」必须视觉可分，绝不能混在一起
+   3) 增值要到位——不只是搬运，还要推断卡点、反向提问 */
+const SYSTEM_PROMPT = `你是一位帮大学生整理课堂内容的助教。用户会给你一节课的录音逐字稿（可能分多段，中间用【课间休息】分隔；可能有语音识别错误、口头语、重复、无标点）。
 
-严格按下面的结构输出 Markdown，不要添加开场白或结尾语。如果某一类信息老师在课上没有提到，就写「本节未提及」，不要编造。
+## 第一原则：不要丢内容
+逐字稿里的信息你可以压缩措辞，但不能因为「它不属于某个预设分类」就丢掉。老师讲的所有东西都有归属，宁可写进「其他」，也不许略过。
 
-## 考点
-- 老师明确强调的重点、可能考的知识点。（逐条列出，尽量保留老师的原话措辞和具体表述）
+## 第二原则：分清谁说的话
+所有内容必须区分两类，用标记隔开：
+- 老师说的 → 直接写在相应分区，不加标记
+- 你推断/补充的 → 必须用「💡」开头，集中放在专门的分区里
+绝不把你自己知道的领域知识冒充成老师讲的内容。判断不了的，写「（此处录音不清）」而不是猜。
 
-## 作业
-- 布置了什么作业、要求做到什么程度、提交形式。（没有作业就写「本节未提及」）
+## 输出结构
+严格按下面的分区输出 Markdown，不要开场白和结尾语，不要加额外的分隔线。
 
-## 要求与规则
-- 对作业格式、考试形式、课堂纪律、评分标准等的具体要求。
+### 一、本节概览
+3-5 句话说清这节课的主线（老师讲到哪、重点是什么、有没有转折）。
 
-## Deadline 与时间节点
-- 所有提到的截止时间、考试时间、提交日期。如果老师只说「下节课交」这类相对时间，原样记录并标注。
+### 二、知识点
+按老师讲的**顺序**逐条列出，尽量保留他的原话措辞、公式、符号、举例。
+- 这是最长的分区，不要怕长
+- 涉及定义/定理/公式时，把老师给的表述完整写下来
+- 老师重复强调的地方，用 **加粗** 标出
 
-## 待办清单
-- [ ] 把学生需要做的事整理成可勾选的待办，每条一句话，包含时间和事项。
+### 三、考试与评分信息
+考试范围、题型、分值分布、判分口径、平时分怎么算。老师没提就写「本节未提及」。
 
-## 备注
-- 逐字稿里值得留意但上面没归类的信息（例如老师提到的参考资料、网址、办公时间）。`;
+### 四、作业与任务
+布置了什么、什么要求、提交形式、做到什么程度。没提写「本节未提及」。
 
-/* ===== Markdown 渲染 ===== */
+### 五、课程规则
+考勤、迟到、纪律、教材、软件、实验要求等硬性规定。没提写「本节未提及」。
+
+### 六、时间节点
+所有提到的截止时间、考试时间、提交日期。老师只说「下节课交」这类相对时间，原样记录并标注「（相对时间，需换算）」。
+
+### 七、延伸内容
+老师提到的参考资料、网址、书目、人物、往届经验、学长学姐的事。
+
+### 八、课堂闲聊与题外话
+老师跑题讲的东西通通放这里。老师的个人经历、吐槽、段子、对时事或行业的看法、给的人生建议。这些看似无用，但是记忆锚点，也是老师的真实态度，不许删。
+
+### 九、待办清单
+把学生要做的事整理成可勾选的待办，每条一句话，包含时间和事项：
+- [ ] 事项（截止时间）
+
+### 十、可能卡住的地方 💡
+基于这节课的内容，推断学生**容易困惑或误解的点**。这是你作为助教的价值所在：
+- 这节内容和之前学过的东西哪里容易混淆
+- 哪个步骤是「看起来显然、其实有前提条件」的
+- 哪个概念是后面章节的地基，现在没懂后面会崩
+每条写：**卡点** → 为什么会卡 → 怎么看穿它。控制在 3-5 条，宁精勿滥。
+
+### 十一、想一想 💡
+提 2-3 个问题引发学生思考。问题要能延伸出这节课的核心，不是查定义就能答的。可以带上你自己的追问。
+
+### 十二、其他
+上面所有分区都装不下的东西放这里。没有就写「无」。
+
+## 关于多段录音
+如果逐字稿里有【课间休息】分隔，那是同一节课的前后两半。整理时当成一整节课处理：知识点按时间顺序自然衔接，不要分开写两遍。如果上半节提的事下半节有补充或更正，以最新的为准并注明。`;
+
+/* ===== Markdown 渲染 =====
+   支持：标题 h2-h4、粗体、行内码、无序号/有序列表、勾选清单、
+   引用块、分隔线、表格、代码块、段落。先转义 HTML 再解析标记，
+   避免 AI 输出里的标签被当成 HTML 执行，也避免 <b> 变成字面文本。 */
 function mdToHtml(md){
-  const esc = s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const lines = md.split('\n');
-  let html='',ul=false;
-  const closeUl=()=>{if(ul){html+='</ul>';ul=false}};
-  for(let raw of lines){
-    let line = esc(raw);
-    line = line.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>');
-    if(/^#{2,3}\s+/.test(line)){closeUl();html+='<h2>'+line.replace(/^#{2,3}\s+/,'')+'</h2>';}
-    else if(/^\s*-\s+\[\s?\]\s*/.test(line)){if(!ul){html+='<ul>';ul=true}html+='<li>☐ '+line.replace(/^\s*-\s+\[\s?\]\s*/,'')+'</li>';}
-    else if(/^\s*[-*]\s+/.test(line)){if(!ul){html+='<ul>';ul=true}html+='<li>'+line.replace(/^\s*[-*]\s+/,'')+'</li>';}
-    else if(!line.trim()){closeUl();}
-    else {closeUl();html+='<p style="margin:8px 0">'+line+'</p>';}
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const lines=String(md).replace(/\r\n?/g,'\n').split('\n');
+  let html='',list=null,inCode=false,codeBuf=[],i=0;
+  const closeList=()=>{ if(list){ html+='</'+list+'>'; list=null; } };
+  const inline=s=>esc(s)
+    .replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g,'<em>$1</em>')
+    .replace(/`([^`]+?)`/g,'<code>$1</code>')
+    .replace(/\[([^\]]+?)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  const isTableSep=s=>/^\s*\|?[\s:-]*-[\s:|-]*\|?\s*$/.test(s)&&s.includes('-');
+  const splitRow=s=>s.replace(/^\s*\|/,'').replace(/\|\s*$/,'').split('|').map(c=>c.trim());
+  while(i<lines.length){
+    let raw=lines[i];
+    /* 代码块 */
+    if(/^\s*```/.test(raw)){
+      if(inCode){ closeList(); html+='<pre><code>'+esc(codeBuf.join('\n'))+'</code></pre>'; codeBuf=[];inCode=false; }
+      else{ closeList(); inCode=true; }
+      i++; continue;
+    }
+    if(inCode){ codeBuf.push(raw); i++; continue; }
+    const line=inline(raw);
+    /* 表格：当前行是 | ... | 且下一行是分隔行 */
+    if(/^\s*\|.*\|\s*$/.test(raw) && i+1<lines.length && isTableSep(lines[i+1])){
+      closeList();
+      const head=splitRow(raw); i+=2;
+      let body=[];
+      while(i<lines.length && /^\s*\|.*\|\s*$/.test(lines[i])){ body.push(splitRow(lines[i])); i++; }
+      html+='<table><thead><tr>'+head.map(c=>'<th>'+inline(c)+'</th>').join('')+'</tr></thead><tbody>'
+        +body.map(r=>'<tr>'+r.map(c=>'<td>'+inline(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+      continue;
+    }
+    if(/^\s*#{2,4}\s+/.test(raw)){ closeList(); const lv=raw.match(/^\s*(#{2,4})\s+/)[1].length;
+      html+='<h'+lv+'>'+inline(raw.replace(/^\s*#{2,4}\s+/,''))+'</h'+lv+'>'; i++; continue; }
+    if(/^\s*([-*_])\s*\1\s*\1[\s-]*$/.test(raw)){ closeList(); html+='<hr>'; i++; continue; }
+    if(/^\s*[-*]\s+\[\s?[xX]?\s?\]\s*/.test(raw)){ closeList();
+      const done=/^\s*[-*]\s+\[\s?[xX]\s?\]/.test(raw);
+      const txt=inline(raw.replace(/^\s*[-*]\s+\[\s?[xX]?\s?\]\s*/,''));
+      html+='<div class="md-todo'+(done?' done':'')+'"><span class="md-box">'+(done?'✓':'')+'</span><span>'+txt+'</span></div>';
+      i++; continue; }
+    if(/^\s*[-*]\s+/.test(raw)){ if(list!=='ul'){closeList();html+='<ul>';list='ul';}
+      html+='<li>'+inline(raw.replace(/^\s*[-*]\s+/,''))+'</li>'; i++; continue; }
+    if(/^\s*\d+[.)]\s+/.test(raw)){ if(list!=='ol'){closeList();html+='<ol>';list='ol';}
+      html+='<li>'+inline(raw.replace(/^\s*\d+[.)]\s+/,''))+'</li>'; i++; continue; }
+    if(/^\s*>\s?/.test(raw)){ closeList(); html+='<blockquote>'+inline(raw.replace(/^\s*>\s?/,''))+'</blockquote>'; i++; continue; }
+    if(!raw.trim()){ closeList(); i++; continue; }
+    closeList(); html+='<p>'+line+'</p>'; i++;
   }
-  closeUl();
+  if(inCode&&codeBuf.length) html+='<pre><code>'+esc(codeBuf.join('\n'))+'</code></pre>';
+  closeList();
   return html;
 }
 
@@ -673,24 +1001,36 @@ function scrollerReset(){
   hideViewBack();
 }
 
-/* ===== 转场：整屏不透明上层滑入，下层微缩后退（学院 §9.1）===== */
-let busy=false;
+/* ===== 转场：整屏不透明上层滑入，下层微缩后退（学院 §9.1）=====
+   注意：busy 锁必须用定时器兜底——WAAPI 的 onfinish 在页面切到后台时
+   不触发，只靠 onfinish 解锁会让 busy 永久卡 true，表现为「切几次后点不动」 */
+let busy=false, busyTimer=null;
+function lockBusy(ms){
+  busy=true;
+  if(busyTimer) clearTimeout(busyTimer);
+  busyTimer=setTimeout(()=>{ busy=false; busyTimer=null; }, ms);
+}
+function unlockBusy(){
+  busy=false;
+  if(busyTimer){ clearTimeout(busyTimer); busyTimer=null; }
+}
+
+const TRAN={dur:340,ease:'cubic-bezier(.32,.72,0,1)'};
+
 function switchView(v,back){
   if(!back && v===currentView) return;
   if(busy) return;
-  busy=true;
+  const outEl=$('view-'+currentView);
+  const inEl=$('view-'+v);
+  if(!inEl) return;
+  lockBusy(TRAN.dur+160);
   if(!back){ TAB_HIST.push(currentView); history.pushState({v:v},''); }
   const dir = back ? -1 : (VIEW_ORDER[v]>VIEW_ORDER[currentView] ? 1 : -1);
-  const from = back ? (dir>0?60:-60) : (dir>0?window.innerWidth:0);
-  /* 先把旧页快照到底层？Tab 场景不需要——旧页 DOM 还在，直接把它当作底层露出来 */
-  const outEl=$('view-'+currentView);
   currentView=v;
-  const inEl=$('view-'+v);
   if(back){
     vbView.innerHTML='';
-  } else {
-    outEl.style.display='none';
   }
+  outEl.style.display='none';
   inEl.style.display='block';
   inEl.classList.add('on');
   document.querySelectorAll('.dock-btn').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
@@ -703,29 +1043,40 @@ function switchView(v,back){
   $('hd').classList.remove('collapsed');
   hdP=0;
   dockShow();
-  /* 双舞台：前景铺开整屏不透明，从侧边滑入；完成后面归于常态 */
+  /* 双舞台：前景铺开整屏不透明，从侧边滑入 */
   inEl.style.willChange='transform,opacity';
+  inEl.style.background='var(--bg)';
   if(back){
-    /* 返回：前景从 -60px 回来，位移不大 */
     inEl.animate(
-      [{transform:'translateX('+(dir>0?60:-60)+'px)',opacity:.4},
+      [{transform:'translateX(-64px)',opacity:.5},
        {transform:'translateX(0)',opacity:1}],
-      {duration:360,easing:'cubic-bezier(.32,.72,0,1)'}
-    ).onfinish=()=>{ inEl.style.willChange=''; busy=false; };
+      {duration:300,easing:TRAN.ease}
+    );
+    outEl.animate(
+      [{transform:'translateX(0) scale(1)',opacity:1},
+       {transform:'translateX(24px) scale(.97)',opacity:.5}],
+      {duration:300,easing:TRAN.ease,fill:'forwards'}
+    );
+    setTimeout(()=>{ inEl.style.background='';inEl.style.willChange=''; unlockBusy(); },320);
   } else {
+    const from = dir>0 ? Math.round(window.innerWidth*.34) : -Math.round(window.innerWidth*.34);
     inEl.animate(
-      [{transform:'translateX('+from+'px) scale(.99)',opacity:.5},
-       {transform:'translateX(0) scale(1)',opacity:1}],
-      {duration:340,easing:'cubic-bezier(.32,.72,0,1)'}
-    ).onfinish=()=>{ inEl.style.willChange=''; outEl.style.display='none'; busy=false; };
-    /* 下层微缩后退（露出进深） */
+      [{transform:'translateX('+from+'px)',opacity:.6},
+       {transform:'translateX(0)',opacity:1}],
+      {duration:TRAN.dur,easing:TRAN.ease}
+    );
+    /* 下层微缩后退（露出进深），结束后才收走 */
     outEl.style.display='block';
     outEl.style.position='absolute';outEl.style.inset='0';outEl.style.zIndex='1';
     outEl.animate(
       [{transform:'translateX(0) scale(1)',opacity:1},
-       {transform:'translateX('+(-16*dir)+'px) scale(.97)',opacity:.6}],
-      {duration:340,easing:'cubic-bezier(.32,.72,0,1)',fill:'forwards'}
+       {transform:'translateX('+(-Math.round(window.innerWidth*.24)*dir)+'px) scale(.98)',opacity:.55}],
+      {duration:TRAN.dur,easing:TRAN.ease,fill:'forwards'}
     );
+    setTimeout(()=>{
+      outEl.style.display='none';outEl.style.position='';outEl.style.inset='';outEl.style.zIndex='';
+      inEl.style.background='';inEl.style.willChange=''; unlockBusy();
+    },TRAN.dur+20);
   }
 }
 
@@ -859,7 +1210,7 @@ function stageBack(on){
   },null,{z:1,r:.34});
 }
 function openSheet(){
-  $('apiKey').value=getKey();
+  syncProvUI();
   $('sheet').classList.remove('out');
   $('sheet').classList.add('show');
   $('sheetMask').classList.add('show');
@@ -874,16 +1225,78 @@ function closeSheet(){
   setTimeout(()=>s.classList.remove('out'),340);
 }
 $('settingsToggle').onclick=openSheet;
+
+/* ===== 首次使用引导 ===== */
+let onbStep=0, onbProv='zhipu';
+const ONB_TOTAL=3;
+function openOnboard(step){
+  onbStep=step||0;
+  /* 已存过 key 的话默认选中同一个服务商 */
+  if(getKey()) onbProv=getProv();
+  $('onb').classList.add('show');
+  $('onbKey').value=getKey();
+  paintIcons();
+  renderOnb();
+}
+function closeOnboard(skipped){
+  $('onb').classList.remove('show');
+  localStorage.setItem('lecture_onboarded','1');
+  if(!skipped) toast('开始用吧');
+}
+function renderOnb(){
+  document.querySelectorAll('.onb-pane').forEach((p,i)=>p.classList.toggle('on',i===onbStep));
+  document.querySelectorAll('#onbDots i').forEach((d,i)=>d.classList.toggle('on',i===onbStep));
+  document.querySelectorAll('#onbProv .onb-prov-card').forEach(c=>c.classList.toggle('on',c.dataset.prov===onbProv));
+  const last=onbStep===ONB_TOTAL-1;
+  $('onbNext').textContent = last ? '开始使用' : '下一步';
+  $('onbSkip').style.display = last ? 'none' : '';
+}
+$('onbNext').onclick=()=>{
+  if(onbStep<ONB_TOTAL-1){ onbStep++; renderOnb(); return; }
+  closeOnboard(false);
+};
+$('onbSkip').onclick=()=>closeOnboard(true);
+/* 服务商卡片：点卡片切换；点链接先去拿 key */
+document.querySelectorAll('#onbProv .onb-prov-card').forEach(c=>{
+  c.onclick=e=>{
+    const link=e.target.closest('.opc-link');
+    if(link){ window.open(link.dataset.url,'_blank','noopener'); return; }
+    onbProv=c.dataset.prov;
+    renderOnb();
+  };
+});
+$('onbSave').onclick=()=>{
+  const v=$('onbKey').value.trim();
+  if(!v){ toast('先把 Key 粘进来'); return; }
+  setProv(onbProv); setKey(v);
+  toast('已连接 '+PROVIDERS[onbProv].name);
+  onbStep=ONB_TOTAL-1; renderOnb();
+};
+
+/* ===== 服务商切换 ===== */
+function syncProvUI(){
+  const p=getProv(), cfg=PROVIDERS[p];
+  document.querySelectorAll('.prov-tab').forEach(b=>b.classList.toggle('on',b.dataset.prov===p));
+  const input=$('apiKey');
+  input.placeholder=cfg.placeholder;
+  input.value=getKey();
+  $('keyLink').href=cfg.keyUrl;
+  $('keyHint').childNodes[0].nodeValue=cfg.note+'\n    ';
+}
+document.querySelectorAll('.prov-tab').forEach(b=>{
+  b.onclick=()=>{ setProv(b.dataset.prov); syncProvUI(); };
+});
 $('sheetClose').onclick=closeSheet;
 $('sheetMask').onclick=closeSheet;
 
 $('saveKey').onclick=()=>{
   const v=$('apiKey').value.trim();
   if(!v){toast('Key 不能为空');return}
-  localStorage.setItem(KEY_STORE,v);
-  toast('已保存');
+  setKey(v);
+  toast('已保存 · '+PROVIDERS[getProv()].name);
   setTimeout(closeSheet,400);
 };
+$('guideBtn').onclick=()=>{ closeSheet(); setTimeout(()=>openOnboard(0),360); };
 $('exportBtn').onclick=()=>{
   const blob=new Blob([JSON.stringify({exported:new Date().toISOString(),records:getRecords()},null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -943,10 +1356,71 @@ $('courseSel').onchange=()=>{
     } else $('courseSel').value='';
   }
 };
-$('clearInput').onclick=()=>{$('transcript').value='';setStatus('')};
+/* ===== 多段逐字稿（一节课可能分两段录音）===== */
+const SEG_LABELS=['上半节','下半节','第三段','第四段'];
+function segCount(){ return document.querySelectorAll('#segList .seg-item').length; }
+function addSeg(focus){
+  const list=$('segList');
+  if(segCount()>=4){ toast('最多 4 段'); return; }
+  const n=segCount();
+  const el=document.createElement('div');
+  el.className='seg-item';
+  el.innerHTML=
+    '<div class="seg-bar">'
+    +'<span class="seg-tag">'+(SEG_LABELS[n]||('第'+(n+1)+'段'))+'</span>'
+    +'<button class="seg-del" title="删除这段">'+(n>0?'✕':'清空')+'</button>'
+    +'</div>'
+    +'<textarea class="seg-ta" placeholder="粘贴第 '+(n+1)+' 段的逐字稿…"></textarea>';
+  list.appendChild(el);
+  el.querySelector('.seg-del').onclick=()=>{
+    if(segCount()<=1){ el.querySelector('.seg-ta').value=''; return; }
+    el.remove(); relabelSegs();
+  };
+  relabelSegs();
+  if(focus!==false) el.querySelector('.seg-ta').focus();
+  syncSegDeleteLabels();
+}
+function relabelSegs(){
+  document.querySelectorAll('#segList .seg-item').forEach((el,i)=>{
+    const tag=el.querySelector('.seg-tag');
+    if(tag) tag.textContent=SEG_LABELS[i]||('第'+(i+1)+'段');
+    const ta=el.querySelector('.seg-ta');
+    if(ta) ta.placeholder='粘贴第 '+(i+1)+' 段的逐字稿…';
+  });
+  syncSegDeleteLabels();
+}
+function syncSegDeleteLabels(){
+  const items=document.querySelectorAll('#segList .seg-item');
+  items.forEach((el,i)=>{
+    const b=el.querySelector('.seg-del');
+    if(b) b.textContent=(i===0?'清空':'✕');
+  });
+}
+/* 收集所有非空段，用分隔标记拼接 */
+function collectTranscript(){
+  const tAs=[...document.querySelectorAll('#segList .seg-ta')];
+  const parts=tAs.map(t=>t.value.trim());
+  const filled=parts.filter(Boolean);
+  if(filled.length<=1) return filled[0]||'';
+  /* 多段：插入课间休息标记，让 AI 知道是同一节课 */
+  return parts.map((p,i)=>p?('【'+SEG_LABELS[i]+'】\n'+p):'')
+    .filter(Boolean).join('\n\n【课间休息】\n\n');
+}
+function clearTranscript(){ document.querySelectorAll('#segList .seg-ta').forEach(t=>t.value=''); }
+$('addSeg').onclick=()=>addSeg(true);
+
+$('clearInput').onclick=()=>{clearTranscript();setStatus('')};
 $('pasteBtn').onclick=async()=>{
   try{const t=await navigator.clipboard.readText();
-    if(t){$('transcript').value=t;toast('已粘贴')}else toast('剪贴板是空的');
+    if(t){
+      /* 粘到当前空段；都不空则新建一段 */
+      const tas=[...document.querySelectorAll('#segList .seg-ta')];
+      const empty=tas.find(x=>!x.value.trim());
+      if(empty){ empty.value=t; }
+      else if(tas.length<4){ addSeg(false); document.querySelectorAll('#segList .seg-ta')[tas.length].value=t; }
+      else { tas[0].value=t; }
+      toast('已粘贴');
+    } else toast('剪贴板是空的');
   }catch(e){toast('请手动长按粘贴')}
 };
 $('copyBtn').onclick=async()=>{
@@ -955,7 +1429,7 @@ $('copyBtn').onclick=async()=>{
 
 /* ===== 调 API ===== */
 async function summarize(){
-  const key=getKey(),text=$('transcript').value.trim();
+  const key=getKey(),text=collectTranscript();
   if(!key){setStatus('先在右上角设置里填 API Key','err');openSheet();return}
   if(!text){setStatus('先把逐字稿粘进来','err');return}
   if(text.length<30){setStatus('内容太短，确认粘贴完整','err');return}
@@ -968,13 +1442,14 @@ async function summarize(){
   const course=$('courseSel').value,date=$('dateInput').value,slot=$('slotSel').value;
   const ctx=[course&&course!=='__custom'?'课程：'+course:'',date?'日期：'+date:'',slot?'节次：第'+slot+'节':''].filter(Boolean).join('；');
 
+  const prov=getProv(), cfg=PROVIDERS[prov];
   let acc='';
   try{
-    const resp=await fetch('https://api.deepseek.com/chat/completions',{
+    const resp=await fetch(cfg.endpoint,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
       body:JSON.stringify({
-        model:'deepseek-flash',stream:true,temperature:0.3,
+        model:cfg.model,stream:true,temperature:0.3,
         messages:[
           {role:'system',content:SYSTEM_PROMPT},
           {role:'user',content:(ctx?'【'+ctx+'】\n\n':'')+'这是本节课的逐字稿：\n\n'+text}
@@ -1005,7 +1480,10 @@ async function summarize(){
       }
     }
     if(!acc) setStatus('没有返回内容，检查 key 和余额','err');
-    else{setStatus('完成 · '+acc.length+' 字');window.__lastResult=acc;toast('生成完成')}
+    else{
+      window.__lastResult=acc;
+      autosave(acc);
+    }
   }catch(e){
     const msg=String(e&&e.message||e);
     if(/Failed to fetch|NetworkError|Load failed/i.test(msg)) setStatus('网络失败：检查网络或跨域限制','err');
@@ -1014,25 +1492,50 @@ async function summarize(){
 }
 $('summarize').onclick=summarize;
 
-$('saveRec').onclick=()=>{
-  const content=window.__lastResult||$('output').innerText;
-  if(!content){setStatus('还没有可保存的结果','err');return}
-  const course=$('courseSel').value;
-  if(!course||course==='__custom'){setStatus('先选一门课程','err');return}
-  const date=$('dateInput').value||new Date().toISOString().slice(0,10);
-  const slot=$('slotSel').value;
+/* ===== 自动归档（不再需要手动点保存）=====
+   生成完成后直接写入档案，写入后把记录 id 存在 window.__lastRecId，
+   方便撤销或去重。缺课程/日期时回退到智能推断值。 */
+function autosave(content){
+  if(!content) return null;
+  let course=$('courseSel').value;
+  let date=$('dateInput').value||new Date().toISOString().slice(0,10);
+  let slot=$('slotSel').value;
+  /* 未选课程时自动匹配当天的课 */
+  if(!course||course==='__custom'){
+    const m=matchCourses(date,slot);
+    course=m.length? m[0].course : '未分类';
+    if(!slot){
+      const today=new Date();
+      const dow=today.getDay()===0?7:today.getDay();
+      const hit=SCHEDULE.filter(s=>s.day===dow)[0];
+      if(hit&&date===today.toISOString().slice(0,10)) slot=hit.slots;
+    }
+  }
   const rec=getRecords();
-  rec.unshift({
-    id:'r'+Date.now()+Math.random().toString(36).slice(2,7),
+  /* 同课同天同节次重复生成时，覆盖旧记录而不是堆一堆 */
+  const dup=rec.findIndex(r=>r.course===course&&r.date===date&&String(r.slot||'')===String(slot||''));
+  const item={
+    id: dup>=0 ? rec[dup].id : ('r'+Date.now()+Math.random().toString(36).slice(2,7)),
     course,date,slot,
     time:slot?slotTime(slot,date):'',
     week:weekOf(date),content,
-    createdAt:new Date().toISOString()
-  });
+    createdAt:new Date().toISOString(),
+    updatedAt:new Date().toISOString()
+  };
+  if(dup>=0) rec[dup]=item; else rec.unshift(item);
   setRecords(rec);
-  setStatus('已保存到课程档案','ok');
-  toast('已保存');
-  window.__lastResult=null;
+  window.__lastRecId=item.id;
+  const warn = course==='未分类' ? ' · 未匹配到课程，已存为「未分类」' : '';
+  setStatus('已自动归档 · '+course+date.slice(5)+warn, warn?'err':'ok');
+  toast(dup>=0?'已更新档案':'已自动归档');
+  return item;
+}
+
+/* 手动重存（用户在改了课程/日期后想修正归位） */
+$('saveRec').onclick=()=>{
+  const content=window.__lastResult||$('output').innerText;
+  if(!content){setStatus('还没有可保存的结果','err');return}
+  autosave(content);
 };
 
 /* ===== 日历 ===== */
@@ -1239,7 +1742,7 @@ function releaseTap(e){
   }
 }
 ['touchend','touchcancel'].forEach(ev=>document.addEventListener(ev,releaseTap,{passive:true}));
-if(!getKey()) setTimeout(openSheet,500);
+if(!getKey() && !localStorage.getItem('lecture_onboarded')) setTimeout(openOnboard,400);
 </script>
 </body>
 </html>
