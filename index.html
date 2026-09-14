@@ -489,7 +489,7 @@ async function summarize() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
       body: JSON.stringify({
-        model: 'deepseek-v4-flash', stream: true, temperature: 0.3,
+        model: 'deepseek-flash', stream: true, temperature: 0.3,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: (ctx ? '【' + ctx + '】\n\n' : '') + '这是本节课的逐字稿：\n\n' + text }
