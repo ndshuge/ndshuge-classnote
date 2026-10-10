@@ -1,0 +1,31 @@
+name: Safe Classnote publishing scripts
+
+on:
+  pull_request:
+    paths:
+      - 'push-to-github.bat'
+      - 'repush.bat'
+      - 'tests/safe-push.test.cjs'
+      - '.github/workflows/safe-publish.yml'
+  push:
+    paths:
+      - 'push-to-github.bat'
+      - 'repush.bat'
+      - 'tests/safe-push.test.cjs'
+      - '.github/workflows/safe-publish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-publish-safety:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify safe push behavior in isolated Git repositories
+        run: node tests/safe-push.test.cjs
