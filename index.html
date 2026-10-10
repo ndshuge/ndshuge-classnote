@@ -801,6 +801,7 @@ button.ghost:active,button.mini:active,.sheet-btn:active{
   <button class="sheet-btn" id="guideBtn"><span class="ic" data-icon="book"></span><span>使用说明</span></button>
   <button class="sheet-btn" id="coursesBtn"><span class="ic" data-icon="pencil"></span><span>管理课程</span></button>
   <button class="sheet-btn" id="syncBtn"><span class="ic" data-icon="check"></span><span id="syncLabel">云同步笔记</span></button>
+  <p style="font-size:12px;line-height:1.5;padding:6px 16px;color:var(--muted)">备份仅含笔记、课程和待办，不含账号令牌或 AI Key。导入会先确认，并保留现有记录；未处理的转写草稿只保存在本机。</p>
   <button class="sheet-btn" id="exportBtn">导出备份</button>
   <button class="sheet-btn" id="importBtn">导入备份</button>
   <a class="sheet-btn" id="repoBtn" href="https://github.com/ndshuge/ndshuge-classnote" target="_blank" rel="noopener">
@@ -839,6 +840,7 @@ button.ghost:active,button.mini:active,.sheet-btn:active{
   <div class="doc-body" id="docBody"></div>
 </div>
 
+<script src="./classnote-data.js"></script>
 <script>
 /* ===== Lucide 图标（官方 path，24 网格 / stroke 2）===== */
 const ICONS = {
@@ -1245,7 +1247,7 @@ function dateLabel(ds){
   return (d.getMonth()+1)+'月'+d.getDate()+'日 '+DOW_CN[d.getDay()];
 }
 function getRecords(){try{return JSON.parse(localStorage.getItem(REC_STORE)||'[]')}catch(e){return[]}}
-function setRecords(r){localStorage.setItem(REC_STORE,JSON.stringify(r)); cloudNotify();}
+function setRecords(r){try{localStorage.setItem(REC_STORE,JSON.stringify(r));}catch(e){throw new Error('笔记保存失败：存储空间不足或不可用');}cloudNotify();}
 function getDone(){try{return JSON.parse(localStorage.getItem(DONE_STORE)||'[]')}catch(e){return[]}}
 function setDone(d){localStorage.setItem(DONE_STORE,JSON.stringify(d)); cloudNotify();}
 function getKey(){ return getKeyFor(getProv()); }
@@ -1359,7 +1361,8 @@ function mdToHtml(md){
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g,'<em>$1</em>')
     .replace(/`([^`]+?)`/g,'<code>$1</code>')
-    .replace(/\[([^\]]+?)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+    .replace(/\[([^\]]+?)\]\((https?:\/\/[^\s)]+)\)/g,(_match,label,url)=>
+      '<a href="'+url.replace(/"/g,'&quot;').replace(/'/g,'&#39;')+'" target="_blank" rel="noopener noreferrer">'+label+'</a>');
   const isTableSep=s=>/^\s*\|?[\s:-]*-[\s:|-]*\|?\s*$/.test(s)&&s.includes('-');
   const splitRow=s=>s.replace(/^\s*\|/,'').replace(/\|\s*$/,'').split('|').map(c=>c.trim());
   while(i<lines.length){
@@ -2108,44 +2111,52 @@ window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{
   if(!localStorage.getItem(THEME_STORE)) applyTheme('');
 });
 
+/* Reliable backup/restore v4: validate before writing, merge instead of overwriting. */
 $('exportBtn').onclick=()=>{
-  const payload={
-    exported:new Date().toISOString(),
-    version:3,
-    records:getRecords(),
-    done:getDone(),
-    courses:getCourses(),
-    semStart:getSemStart()
-  };
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='课堂总结备份_'+todayStr()+'.json';
-  a.click();toast('已导出');
+  try{
+    const payload=ClassnoteData.exportData(localBundle());
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const href=URL.createObjectURL(blob);
+    const link=document.createElement('a');
+    link.href=href;link.download='Classnote-backup-'+todayStr()+'.json';
+    document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(href),30000);
+    toast('备份已导出，请妥善保存');
+  }catch(e){toast('备份失败：'+(e.message||'数据格式有误'));}
 };
-$('importBtn').onclick=()=>$('importFile').click();
-$('importFile').onchange=e=>{
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
+$('importFile').onchange=async e=>{
+  const f=e.target.files&&e.target.files[0];
+  e.target.value='';
+  if(!f)return;
+  if(f.size>16*1024*1024){toast('备份超过 16 MB，请分批整理');return;}
+  try{
+    const incoming=JSON.parse(await f.text());
+    const plan=ClassnoteData.merge(localBundle(),incoming);
+    const msg='将新增 '+plan.inserted+' 条笔记，更新 '+plan.updated+
+      ' 条较旧笔记，并合并课程和待办。现有笔记不会被清空。继续吗？';
+    if(!confirm(msg))return;
+    const next=plan.bundle;
+    const names=[REC_STORE,DONE_STORE,COURSE_STORE,SEM_START_STORE];
+    const before=names.map(k=>localStorage.getItem(k));
+    window.__cloudMute=true;
     try{
-      const j=JSON.parse(r.result);const recs=j.records||(Array.isArray(j)?j:null);
-      if(!Array.isArray(recs)) throw new Error('格式不对');
-      const cur=getRecords(),ids=new Set(cur.map(x=>x.id));
-      const merged=cur.concat(recs.filter(x=>!ids.has(x.id)));
-      setRecords(merged);
-      if(Array.isArray(j.done)) setDone(j.done);
-      if(Array.isArray(j.courses)) setCourses(j.courses);
-      else if(Array.isArray(j.schedule)) addCourses(j.schedule.map(s=>s&&s.course));  /* 兼容老备份 */
-      if(j.semStart) localStorage.setItem(SEM_START_STORE,j.semStart);
-      toast('已导入 '+recs.length+' 条');
-      initForm(); renderAll();
-    }catch(err){toast('导入失败')}
-  };
-  r.readAsText(f);e.target.value='';
+      localStorage.setItem(REC_STORE,JSON.stringify(next.records));
+      localStorage.setItem(DONE_STORE,JSON.stringify(next.done));
+      localStorage.setItem(COURSE_STORE,JSON.stringify(next.courses));
+      if(next.semStart)localStorage.setItem(SEM_START_STORE,next.semStart);
+    }catch(e){
+      names.forEach((k,i)=>{
+        try{if(before[i]===null)localStorage.removeItem(k);else localStorage.setItem(k,before[i]);}catch(_){}
+      });
+      throw new Error('本地空间不足或不可用，原有数据已尝试恢复');
+    }finally{window.__cloudMute=false;}
+    initForm();renderAll();
+    cloudNotify();
+    toast('恢复完成：新增 '+plan.inserted+' 条，更新 '+plan.updated+' 条');
+  }catch(e){toast('导入失败：'+(e.message||'文件无效'));}
 };
 
-/* ===== 录入表单 ===== */
+/* ===== 录入相关 ===== */
 function initForm(){
   const keep=$('courseSel').value;
   const cs=getCourses();
@@ -2185,8 +2196,8 @@ function addSeg(focus){
     +'<textarea class="seg-ta" placeholder="粘贴第 '+(n+1)+' 段的逐字稿…"></textarea>';
   list.appendChild(el);
   el.querySelector('.seg-del').onclick=()=>{
-    if(segCount()<=1){ el.querySelector('.seg-ta').value=''; return; }
-    el.remove(); relabelSegs();
+    if(segCount()<=1){ el.querySelector('.seg-ta').value=''; saveDraftSoon(); return; }
+    el.remove(); relabelSegs(); saveDraftSoon();
   };
   relabelSegs();
   if(focus!==false) el.querySelector('.seg-ta').focus();
@@ -2218,7 +2229,7 @@ function collectTranscript(){
   return parts.map((p,i)=>p?('【'+SEG_LABELS[i]+'】\n'+p):'')
     .filter(Boolean).join('\n\n【课间休息】\n\n');
 }
-function clearTranscript(){ document.querySelectorAll('#segList .seg-ta').forEach(t=>t.value=''); }
+function clearTranscript(){document.querySelectorAll('#segList .seg-ta').forEach(t=>t.value='');try{localStorage.removeItem('classnote_transcript_draft_v1');}catch(e){}}
 $('addSeg').onclick=()=>addSeg(true);
 
 $('clearInput').onclick=()=>{clearTranscript();setStatus('')};
@@ -2357,7 +2368,7 @@ function autosave(content, transcript, mergeFrom){
     updatedAt: new Date().toISOString()
   };
   if(dup>=0) rec[dup]=item; else rec.unshift(item);
-  setRecords(rec);
+  try{setRecords(rec);}catch(e){setStatus(e.message,'err');toast('笔记未保存，请立即复制内容');return null;}
   window.__lastRecId=item.id;
   const warn = course==='未分类' ? ' · 未匹配到课程，已存为「未分类」' : '';
   setStatus('已自动归档 · '+course+' '+dateLabel(date)+warn, warn?'err':'ok');
@@ -2434,7 +2445,7 @@ function bindRec(){
     b.onclick=e=>{
       e.stopPropagation();
       if(!confirm('删除这条记录？')) return;
-      setRecords(getRecords().filter(x=>x.id!==b.dataset.del));
+      try{setRecords(getRecords().filter(x=>x.id!==b.dataset.del));}catch(e){toast('删除失败：'+e.message);return;}
       renderAll();
       if(currentView==='courses') renderCourseDetail(currentCourse);
       else if(currentView==='cal'&&$('dayPanel').style.display!=='none') showDay($('dayTitle').textContent.slice(0,0)||null);
@@ -2533,10 +2544,10 @@ function renderTodo(){
   $('todoEmpty').style.display=shown.length?'none':'block';
   $('todoList').innerHTML=shown.map(t=>{
     const isDone=done.indexOf(t.key)>=0;
-    return '<div class="todo-item'+(isDone?' done':'')+'" data-key="'+t.key+'">'+
+    return '<div class="todo-item'+(isDone?' done':'')+'" data-key="'+sbEsc(t.key)+'">'+
       '<span class="todo-box">'+(isDone?'☑':'☐')+'</span>'+
-      '<span class="todo-text">'+t.text+'</span>'+
-      '<span class="todo-src">'+t.course+'</span></div>';
+      '<span class="todo-text">'+sbEsc(t.text)+'</span>'+
+      '<span class="todo-src">'+sbEsc(t.course)+'</span></div>';
   }).join('');
   document.querySelectorAll('.todo-item[data-key]').forEach(el=>{
     el.onclick=()=>{
@@ -2548,8 +2559,8 @@ function renderTodo(){
   $('deadlineEmpty').style.display=dls.length?'none':'block';
   $('deadlineList').innerHTML=dls.map(t=>
     '<div class="todo-item" style="cursor:default">'+
-    '<span class="todo-text">'+t.text+'</span>'+
-    '<span class="todo-src">'+t.course+'</span></div>').join('');
+    '<span class="todo-text">'+sbEsc(t.text)+'</span>'+
+    '<span class="todo-src">'+sbEsc(t.course)+'</span></div>').join('');
 }
 $('hideDone').onclick=()=>{
   localStorage.setItem('lecture_hide_done',localStorage.getItem('lecture_hide_done')==='1'?'0':'1');
@@ -2562,8 +2573,52 @@ function renderAll(){
   if(currentView==='todo') renderTodo();
 }
 
+/* Preserve unprocessed transcript drafts locally across refresh/navigation.
+   Drafts contain classroom text, so they are NOT part of portable backups. */
+const DRAFT_STORE='classnote_transcript_draft_v1';
+let draftTimer=null,draftWarned=false;
+function saveDraftSoon(){
+  clearTimeout(draftTimer);
+  draftTimer=setTimeout(saveDraftNow,450);
+}
+function saveDraftNow(){
+  const segments=[...document.querySelectorAll('#segList .seg-ta')].map(el=>el.value);
+  if(!segments.some(s=>s.trim())){
+    try{localStorage.removeItem(DRAFT_STORE);}catch(e){}
+    return;
+  }
+  try{
+    localStorage.setItem(DRAFT_STORE,JSON.stringify({
+      course:$('courseSel').value,date:$('dateInput').value,
+      segments:segments,savedAt:new Date().toISOString()
+    }));
+  }catch(e){
+    if(!draftWarned){draftWarned=true;toast('草稿未保存，请复制转写文本以防丢失');}
+  }
+}
+function restoreDraft(){
+  let d;
+  try{d=JSON.parse(localStorage.getItem(DRAFT_STORE)||'null');}catch(e){return;}
+  if(!d||!Array.isArray(d.segments)||d.segments.length<1||d.segments.length>4||
+      d.segments.some(t=>typeof t!=='string'||t.length>2000000)||
+      !d.segments.some(t=>t.trim()))return;
+  while(segCount()<d.segments.length)addSeg(false);
+  document.querySelectorAll('#segList .seg-ta').forEach((el,i)=>{el.value=d.segments[i]||'';});
+  if([...$('courseSel').options].some(o=>o.value===d.course))$('courseSel').value=d.course;
+  if(/^\d{4}-\d{2}-\d{2}$/.test(d.date||''))$('dateInput').value=d.date;
+  updateMatch();
+  toast('已恢复上次未处理的草稿');
+}
+document.addEventListener('input',e=>{
+  if(e.target&&e.target.matches&&e.target.matches('#segList .seg-ta'))saveDraftSoon();
+});
+$('courseSel').addEventListener('change',saveDraftSoon);
+$('dateInput').addEventListener('change',saveDraftSoon);
+$('pasteBtn').addEventListener('click',()=>setTimeout(saveDraftSoon,200));
+window.addEventListener('pagehide',()=>{clearTimeout(draftTimer);saveDraftNow();});
 initForm();
-addSeg(false);   /* 默认给一段输入框，用户不用先点「添加一段」 */
+addSeg(false);
+restoreDraft();   /* 默认给一段输入框，用户不用先点「添加一段」 */
 renderAcct();
 renderProvLine();   /* 录入页常驻的通道提示：当前用谁、花不花钱、缺不缺 key */
 /* 从总院登录完回来（或切回本页面）时刷新账号条——同一个域，本地存储是共享的 */
