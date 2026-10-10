@@ -4,6 +4,8 @@
 
 **[打开应用 →](https://ndshuge.github.io/ndshuge-classnote/)**
 
+![Classnote 课堂总结真实网页截图](docs/screenshots/classnote.png)
+
 ## 能做什么？
 
 - **课程管理**：按课程整理记录，结合日历查看学习内容。
