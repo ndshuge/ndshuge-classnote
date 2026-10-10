@@ -1,0 +1,57 @@
+# Classnote: preserve frontend and reviewed deployment scripts.
+# Local credentials and machine-specific configuration
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.pem
+*.key
+*.p12
+*.pfx
+*token*.txt
+credentials.local.json
+service-account.local.json
+
+# Dependencies and generated caches
+node_modules/
+npm-cache/
+.cache/
+coverage/
+.nyc_output/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# Temporary files and local reports
+*.log
+*.tmp
+*.bak
+*.bak-*
+*.bak.*
+*.old
+*.orig
+*.rej
+*.sqlite
+*.sqlite3
+*.db
+
+# Local classroom backups and exported user data
+exports/
+local-backups/
+*.db-wal
+*.db-shm
